@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailQA - Ingresar</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="marca" href="/index.html">RetailQA</a>
+    <nav class="menu" id="nav-sesion"></nav>
+  </header>
+
+  <main>
+    <h1>Iniciar sesión</h1>
+    <div id="mensaje" class="mensaje oculto"></div>
+    <form class="formulario" id="form-login">
+      <label>Correo
+        <input type="email" id="correo" required>
+      </label>
+      <label>Contraseña
+        <input type="password" id="password" required>
+      </label>
+      <button type="submit">Ingresar</button>
+      <p>¿No tienes cuenta? <a href="/registro.html">Regístrate aquí</a></p>
+    </form>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 RetailQA — Sitio de práctica para CIN 421 / INF423</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const mensajeDiv = document.getElementById('mensaje');
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const correo = document.getElementById('correo').value;
+      const password = document.getElementById('password').value;
+      try {
+        await api('POST', '/auth/login', { correo, password });
+        window.location.href = '/index.html';
+      } catch (err) {
+        mensajeDiv.textContent = err.message;
+        mensajeDiv.className = 'mensaje error';
+      }
+    });
+  </script>
+</body>
+</html>

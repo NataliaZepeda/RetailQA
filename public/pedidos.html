@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailQA - Mis pedidos</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="marca" href="/index.html">RetailQA</a>
+    <nav class="menu" id="nav-sesion"></nav>
+  </header>
+
+  <main>
+    <h1>Mis pedidos</h1>
+    <div id="mensaje" class="mensaje oculto"></div>
+    <div id="lista-pedidos"></div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 RetailQA — Sitio de práctica para CIN 421 / INF423</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const listaPedidos = document.getElementById('lista-pedidos');
+    const mensajeDiv = document.getElementById('mensaje');
+
+    async function cargarPedidos() {
+      try {
+        const { pedidos } = await api('GET', '/pedidos');
+        if (pedidos.length === 0) {
+          listaPedidos.innerHTML = '<p>Aún no tienes pedidos. <a href="/index.html">Ir al catálogo</a></p>';
+          return;
+        }
+        listaPedidos.innerHTML = `
+          <table>
+            <thead>
+              <tr><th>Pedido</th><th>Fecha</th><th>Total</th><th>Estado</th><th>Dirección</th></tr>
+            </thead>
+            <tbody>
+              ${pedidos.map(p => `
+                <tr>
+                  <td>#${p.id}</td>
+                  <td>${new Date(p.created_at).toLocaleString('es-CL')}</td>
+                  <td>${formatoCLP(p.total)}</td>
+                  <td><span class="badge ${p.estado}">${p.estado}</span></td>
+                  <td>${escapeHtml(p.direccion_envio) || '—'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (err) {
+        if (err.message.includes('iniciar sesión')) {
+          listaPedidos.innerHTML = '<p>Debes <a href="/login.html">iniciar sesión</a> para ver tus pedidos.</p>';
+        } else {
+          listaPedidos.innerHTML = `<p>Error: ${err.message}</p>`;
+        }
+      }
+    }
+
+    cargarPedidos();
+  </script>
+</body>
+</html>

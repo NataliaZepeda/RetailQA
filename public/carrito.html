@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailQA - Carrito</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="marca" href="/index.html">RetailQA</a>
+    <nav class="menu" id="nav-sesion"></nav>
+  </header>
+
+  <main>
+    <h1>Mi carrito</h1>
+    <div id="mensaje" class="mensaje oculto"></div>
+    <div id="lista-carrito"></div>
+    <div class="total-carrito" id="total-carrito"></div>
+
+    <div id="seccion-checkout" style="max-width:420px;">
+      <label>Dirección de envío
+        <input type="text" id="direccion-envio" placeholder="Calle, número, comuna">
+      </label>
+      <br><br>
+      <button id="btn-checkout">Confirmar pedido</button>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 RetailQA — Sitio de práctica para CIN 421 / INF423</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/carrito.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailQA - Admin Usuarios</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="marca" href="/index.html">RetailQA</a>
+    <nav class="menu" id="nav-sesion"></nav>
+  </header>
+
+  <main>
+    <h1>Usuarios y roles</h1>
+    <p><a href="/admin/index.html">&larr; Volver al panel</a></p>
+    <div id="mensaje" class="mensaje oculto"></div>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Registrado</th><th>Acciones</th></tr>
+      </thead>
+      <tbody id="tabla-usuarios"></tbody>
+    </table>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 RetailQA — Sitio de práctica para CIN 421 / INF423</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const mensajeDiv = document.getElementById('mensaje');
+    const tabla = document.getElementById('tabla-usuarios');
+
+    function mostrarMensaje(texto, tipo) {
+      mensajeDiv.textContent = texto;
+      mensajeDiv.className = `mensaje ${tipo}`;
+      setTimeout(() => mensajeDiv.classList.add('oculto'), 3000);
+    }
+
+    async function cargarUsuarios() {
+      const { usuarios } = await api('GET', '/admin/usuarios');
+      tabla.innerHTML = usuarios.map(u => `
+        <tr>
+          <td>${u.id}</td>
+          <td>${escapeHtml(u.nombre)}</td>
+          <td>${escapeHtml(u.correo)}</td>
+          <td><span class="badge ${u.rol === 'admin' ? 'enviado' : 'pendiente'}">${u.rol}</span></td>
+          <td>${new Date(u.created_at).toLocaleDateString('es-CL')}</td>
+          <td>
+            <button class="secundario" data-toggle="${u.id}" data-rol-actual="${u.rol}">
+              ${u.rol === 'admin' ? 'Quitar admin' : 'Hacer admin'}
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      document.querySelectorAll('[data-toggle]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const nuevoRol = btn.dataset.rolActual === 'admin' ? 'cliente' : 'admin';
+          try {
+            await api('PUT', `/admin/usuarios/${btn.dataset.toggle}/rol`, { rol: nuevoRol });
+            mostrarMensaje('Rol actualizado.', 'exito');
+            cargarUsuarios();
+          } catch (err) {
+            mostrarMensaje(err.message, 'error');
+          }
+        });
+      });
+    }
+
+    (async () => {
+      try {
+        const { usuario } = await api('GET', '/auth/me');
+        if (!usuario || usuario.rol !== 'admin') { window.location.href = '/index.html'; return; }
+        cargarUsuarios();
+      } catch {
+        window.location.href = '/login.html';
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailQA - Catálogo</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="marca" href="/index.html">RetailQA</a>
+    <nav class="menu" id="nav-sesion"></nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <h1>El mercado, sin salir de tu casa</h1>
+      <div class="accent-bar"></div>
+      <p class="subtitulo">Tienda de retail ficticia para práctica de QA — CIN 421 / INF423. Explora el catálogo, arma tu carrito y prueba el flujo de compra completo.</p>
+    </div>
+
+    <div class="chips-categoria" id="chips-categoria">
+      <button type="button" class="chip activo" data-categoria="">Todas</button>
+    </div>
+
+    <input type="text" id="filtro-buscar" class="buscador" placeholder="Buscar producto...">
+
+    <div id="mensaje" class="mensaje oculto"></div>
+    <div class="grid-productos" id="grid-productos"></div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 RetailQA — Sitio de práctica para CIN 421 / INF423</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/catalogo.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailQA - Admin Productos</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="marca" href="/index.html">RetailQA</a>
+    <nav class="menu" id="nav-sesion"></nav>
+  </header>
+
+  <main>
+    <h1>Gestión de productos</h1>
+    <p><a href="/admin/index.html">&larr; Volver al panel</a></p>
+    <div id="mensaje" class="mensaje oculto"></div>
+
+    <h2 id="titulo-form">Nuevo producto</h2>
+    <form class="formulario" id="form-producto">
+      <input type="hidden" id="producto-id">
+      <label>Nombre <input type="text" id="nombre" required></label>
+      <label>Descripción <textarea id="descripcion" rows="3"></textarea></label>
+      <label>Precio (CLP) <input type="number" id="precio" min="0" step="1" required></label>
+      <label>Stock <input type="number" id="stock" min="0" step="1" required></label>
+      <label>Categoría
+        <select id="categoria_id"><option value="">Sin categoría</option></select>
+      </label>
+      <label>URL de imagen (opcional) <input type="text" id="imagen_url"></label>
+      <div style="display:flex; gap:0.5rem;">
+        <button type="submit" id="btn-guardar">Crear producto</button>
+        <button type="button" class="secundario oculto" id="btn-cancelar">Cancelar edición</button>
+      </div>
+    </form>
+
+    <h2>Productos existentes</h2>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Categoría</th><th>Activo</th><th>Acciones</th></tr>
+      </thead>
+      <tbody id="tabla-productos"></tbody>
+    </table>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 RetailQA — Sitio de práctica para CIN 421 / INF423</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/admin-productos.js"></script>
+</body>
+</html>

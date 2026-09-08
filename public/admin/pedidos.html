@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailQA - Admin Pedidos</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="marca" href="/index.html">RetailQA</a>
+    <nav class="menu" id="nav-sesion"></nav>
+  </header>
+
+  <main>
+    <h1>Gestión de pedidos</h1>
+    <p><a href="/admin/index.html">&larr; Volver al panel</a></p>
+    <div id="mensaje" class="mensaje oculto"></div>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Cliente</th><th>Total</th><th>Estado</th><th>Fecha</th><th>Dirección</th><th>Cambiar estado</th></tr>
+      </thead>
+      <tbody id="tabla-pedidos"></tbody>
+    </table>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 RetailQA — Sitio de práctica para CIN 421 / INF423</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const mensajeDiv = document.getElementById('mensaje');
+    const tabla = document.getElementById('tabla-pedidos');
+    const ESTADOS = ['pendiente', 'pagado', 'enviado', 'cancelado'];
+
+    function mostrarMensaje(texto, tipo) {
+      mensajeDiv.textContent = texto;
+      mensajeDiv.className = `mensaje ${tipo}`;
+      setTimeout(() => mensajeDiv.classList.add('oculto'), 3000);
+    }
+
+    async function cargarPedidos() {
+      const { pedidos } = await api('GET', '/admin/pedidos');
+      tabla.innerHTML = pedidos.map(p => `
+        <tr>
+          <td>#${p.id}</td>
+          <td>${escapeHtml(p.cliente_nombre)}<br><small>${escapeHtml(p.cliente_correo)}</small></td>
+          <td>${formatoCLP(p.total)}</td>
+          <td><span class="badge ${p.estado}">${p.estado}</span></td>
+          <td>${new Date(p.created_at).toLocaleString('es-CL')}</td>
+          <td>${escapeHtml(p.direccion_envio) || '—'}</td>
+          <td>
+            <select data-pedido="${p.id}">
+              ${ESTADOS.map(e => `<option value="${e}" ${e === p.estado ? 'selected' : ''}>${e}</option>`).join('')}
+            </select>
+          </td>
+        </tr>
+      `).join('');
+
+      document.querySelectorAll('[data-pedido]').forEach(select => {
+        select.addEventListener('change', async () => {
+          try {
+            await api('PUT', `/admin/pedidos/${select.dataset.pedido}/estado`, { estado: select.value });
+            mostrarMensaje(`Pedido #${select.dataset.pedido} actualizado.`, 'exito');
+          } catch (err) {
+            mostrarMensaje(err.message, 'error');
+          }
+        });
+      });
+    }
+
+    (async () => {
+      try {
+        const { usuario } = await api('GET', '/auth/me');
+        if (!usuario || usuario.rol !== 'admin') { window.location.href = '/index.html'; return; }
+        cargarPedidos();
+      } catch {
+        window.location.href = '/login.html';
+      }
+    })();
+  </script>
+</body>
+</html>

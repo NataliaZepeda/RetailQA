@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailQA - Panel Admin</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="marca" href="/index.html">RetailQA</a>
+    <nav class="menu" id="nav-sesion"></nav>
+  </header>
+
+  <main>
+    <h1>Panel de administración</h1>
+    <div id="mensaje" class="mensaje oculto"></div>
+    <div class="grid-productos">
+      <div class="card">
+        <h3>Productos</h3>
+        <p>Crear, editar y dar de baja productos del catálogo.</p>
+        <a class="btn" href="/admin/productos.html">Gestionar productos</a>
+      </div>
+      <div class="card">
+        <h3>Usuarios y roles</h3>
+        <p>Ver usuarios registrados y asignar rol de administrador.</p>
+        <a class="btn" href="/admin/usuarios.html">Gestionar usuarios</a>
+      </div>
+      <div class="card">
+        <h3>Pedidos</h3>
+        <p>Ver todos los pedidos y actualizar su estado.</p>
+        <a class="btn" href="/admin/pedidos.html">Gestionar pedidos</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 RetailQA — Sitio de práctica para CIN 421 / INF423</p>
+  </footer>
+
+  <script src="/js/api.js"></script>
+  <script>
+    (async () => {
+      try {
+        const { usuario } = await api('GET', '/auth/me');
+        if (!usuario || usuario.rol !== 'admin') {
+          window.location.href = '/index.html';
+        }
+      } catch {
+        window.location.href = '/login.html';
+      }
+    })();
+  </script>
+</body>
+</html>
