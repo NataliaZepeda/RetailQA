@@ -5,7 +5,15 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "test": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-sonar": "^0.2.16"
+  },
+  "jest": {
+    "reporters": ["default", "jest-sonar"]
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

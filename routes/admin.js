@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../config/db');
 const { requireAdmin } = require('../middleware/auth');
+const { esRolValido, esEstadoPedidoValido } = require('../lib/negocio');
 
 const router = express.Router();
 router.use(requireAdmin);
@@ -99,7 +100,7 @@ router.get('/usuarios', async (req, res) => {
 router.put('/usuarios/:id/rol', async (req, res) => {
   try {
     const { rol } = req.body;
-    if (!['cliente', 'admin'].includes(rol)) {
+    if (!esRolValido(rol)) {
       return res.status(400).json({ error: "El rol debe ser 'cliente' o 'admin'." });
     }
     const [resultado] = await pool.query(
@@ -139,7 +140,7 @@ router.get('/pedidos', async (req, res) => {
 router.put('/pedidos/:id/estado', async (req, res) => {
   try {
     const { estado } = req.body;
-    if (!['pendiente', 'pagado', 'enviado', 'cancelado'].includes(estado)) {
+    if (!esEstadoPedidoValido(estado)) {
       return res.status(400).json({ error: 'Estado inválido.' });
     }
     const [resultado] = await pool.query(

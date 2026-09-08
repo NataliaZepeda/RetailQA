@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../config/db');
 const { requireAuth } = require('../middleware/auth');
+const { calcularTotal, haySuficienteStock } = require('../lib/negocio');
 
 const router = express.Router();
 
@@ -28,7 +29,7 @@ router.post('/checkout', requireAuth, async (req, res) => {
     }
 
     for (const item of items) {
-      if (item.cantidad > item.stock) {
+      if (!haySuficienteStock(item.cantidad, item.stock)) {
         await conexion.rollback();
         return res.status(409).json({
           error: `Stock insuficiente para "${item.nombre}". Disponible: ${item.stock}.`
@@ -36,7 +37,7 @@ router.post('/checkout', requireAuth, async (req, res) => {
       }
     }
 
-    const total = items.reduce((acc, it) => acc + Number(it.precio) * it.cantidad, 0);
+    const total = calcularTotal(items);
 
     const [pedidoResultado] = await conexion.query(
       'INSERT INTO retailqa_pedidos (usuario_id, total, estado, direccion_envio) VALUES (?, ?, ?, ?)',

@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../config/db');
 const { requireAuth } = require('../middleware/auth');
+const { esCantidadValida, haySuficienteStock, calcularTotal } = require('../lib/negocio');
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get('/', requireAuth, async (req, res) => {
        ORDER BY ci.created_at ASC`,
       [usuarioId]
     );
-    const total = items.reduce((acc, it) => acc + Number(it.precio) * it.cantidad, 0);
+    const total = calcularTotal(items);
     res.json({ items, total });
   } catch (err) {
     console.error('Error al obtener carrito:', err);
@@ -31,7 +32,7 @@ router.post('/agregar', requireAuth, async (req, res) => {
     const { producto_id, cantidad } = req.body;
     const cant = parseInt(cantidad, 10);
 
-    if (!producto_id || !Number.isInteger(cant) || cant < 1) {
+    if (!producto_id || !esCantidadValida(cant)) {
       return res.status(400).json({ error: 'Producto y cantidad (entero positivo) son obligatorios.' });
     }
 
@@ -42,7 +43,7 @@ router.post('/agregar', requireAuth, async (req, res) => {
     if (productos.length === 0) {
       return res.status(404).json({ error: 'Producto no encontrado.' });
     }
-    if (cant > productos[0].stock) {
+    if (!haySuficienteStock(cant, productos[0].stock)) {
       return res.status(409).json({ error: `Stock insuficiente. Disponible: ${productos[0].stock}.` });
     }
 
@@ -66,7 +67,7 @@ router.put('/:itemId', requireAuth, async (req, res) => {
     const usuarioId = req.session.usuario.id;
     const cant = parseInt(req.body.cantidad, 10);
 
-    if (!Number.isInteger(cant) || cant < 1) {
+    if (!esCantidadValida(cant)) {
       return res.status(400).json({ error: 'La cantidad debe ser un entero positivo.' });
     }
 

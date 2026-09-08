@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
+const { esPasswordValida } = require('../lib/negocio');
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.post('/registro', async (req, res) => {
     if (!nombre || !correo || !password) {
       return res.status(400).json({ error: 'Nombre, correo y contraseña son obligatorios.' });
     }
-    if (password.length < 6) {
+    if (!esPasswordValida(password)) {
       return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres.' });
     }
 
